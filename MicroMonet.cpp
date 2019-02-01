@@ -8,15 +8,28 @@ long long inputSize = 4 * 33554432;
 static void selection(benchmark::State& state) {
   auto value = state.range(0);
   auto input = new int[inputSize];
+  auto output = new int[inputSize+1];
 
   for(size_t i = 0; i < inputSize; i++)
     input[i] = (i * 12343) % 499;
 
   for(auto _ : state) {
-		// your code goes here
+    int j = 1;
+    for(size_t i = 0; i < inputSize; i++) {
+      output[j] = input[i];
+      j += (input[i] < value);
+      /* res 1 - control dependency
+      int cur = input[i];
+      if (cur < value) {
+        output[j++] = cur;
+      }
+      */
+    }
   }
 	benchmark::DoNotOptimize(input);
+	benchmark::DoNotOptimize(output);
 	delete[] input;
+  delete[] output;
 }
 
 BENCHMARK(selection)
